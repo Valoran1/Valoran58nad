@@ -1,0 +1,8 @@
+{
+  "name": "valoran",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "openai": "^4.23.0"
+  }
+}
