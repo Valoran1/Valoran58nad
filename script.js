@@ -3,13 +3,65 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("user-input");
   const chatLog = document.getElementById("chat-box");
   const scrollBtn = document.getElementById("scroll-btn");
+  const newChatBtn = document.getElementById("new-chat-btn");
+  const conversationList = document.getElementById("conversation-list");
 
   let conversation = [];
+  let currentId = null;
+  let firstMessage = "";
 
+  // NALOŽI SHRANJENE POGOVORE
+  function loadConversations() {
+    conversationList.innerHTML = "";
+    const all = JSON.parse(localStorage.getItem("valoransave") || "{}");
+    Object.entries(all).forEach(([id, data]) => {
+      const li = document.createElement("li");
+      li.textContent = data.title || "Pogovor";
+      li.addEventListener("click", () => {
+        loadConversation(id, data.messages);
+      });
+      conversationList.appendChild(li);
+    });
+  }
+
+  // SHRANI AKTUALNI POGOVOR
+  function saveConversation() {
+    if (!firstMessage.trim()) return;
+    const all = JSON.parse(localStorage.getItem("valoransave") || "{}");
+    all[currentId] = {
+      title: firstMessage.length > 50 ? firstMessage.slice(0, 50) + "..." : firstMessage,
+      messages: conversation
+    };
+    localStorage.setItem("valoransave", JSON.stringify(all));
+    loadConversations();
+  }
+
+  // NALOŽI STARI POGOVOR
+  function loadConversation(id, messages) {
+    currentId = id;
+    conversation = [...messages];
+    chatLog.innerHTML = "";
+    messages.forEach((msg) => {
+      addMessage(msg.role === "user" ? "user" : "bot", msg.content);
+    });
+  }
+
+  // ZAČNI NOV POGOVOR
+  newChatBtn.addEventListener("click", () => {
+    conversation = [];
+    currentId = crypto.randomUUID();
+    chatLog.innerHTML = "";
+    firstMessage = "";
+  });
+
+  // POŠLJI VPRAŠANJE
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const message = input.value.trim();
     if (!message) return;
+
+    if (!currentId) currentId = crypto.randomUUID();
+    if (!firstMessage) firstMessage = message;
 
     addMessage("user", message);
     conversation.push({ role: "user", content: message });
@@ -47,13 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       conversation.push({ role: "assistant", content: botMsg });
+      saveConversation();
+
     } catch (err) {
       botElement.textContent = "Prišlo je do napake. Poskusi znova.";
       console.error(err);
     }
   });
 
-  // Shift+Enter = nova vrstica / Enter = pošlji
+  // ENTER = POŠLJI, SHIFT+ENTER = NOVA VRSTICA
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -61,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Scroll gumb
+  // SCROLL GUMB
   window.addEventListener("scroll", () => {
     scrollBtn.style.display = window.scrollY > 100 ? "block" : "none";
   });
@@ -70,9 +124,9 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   });
 
+  // DODAJ SPOROČILO V UI
   function addMessage(role, text) {
     const div = document.createElement("div");
-    // Samo sprememba class-ov za CSS podporo mehurčkov
     const roleClass = role === "user" ? "user-msg" : "bot-msg";
     div.className = `${roleClass} fade-in`;
     div.textContent = text;
@@ -80,10 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
     chatLog.scrollTop = chatLog.scrollHeight;
     return div;
   }
+
+  // OB ZAGONU
+  loadConversations();
 });
-
-
-
 
 
 
