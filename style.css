@@ -4,12 +4,58 @@ body {
   background-color: #101010;
   color: #fff;
   font-family: 'IBM Plex Sans', sans-serif;
+  display: flex;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #121212;
+  padding: 20px;
+  border-right: 1px solid #222;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+#new-chat-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #1e1e1e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+#new-chat-btn:hover {
+  background-color: #2a2a2a;
+}
+
+#conversation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#conversation-list li {
+  padding: 10px;
+  background-color: #1a1a1a;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#conversation-list li:hover {
+  background-color: #2c2c2c;
 }
 
 .container {
+  flex: 1;
+  padding: 20px;
   max-width: 700px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .hero {
@@ -114,6 +160,7 @@ body {
 .scroll-button:hover {
   background-color: #222;
 }
+
 
 
 
